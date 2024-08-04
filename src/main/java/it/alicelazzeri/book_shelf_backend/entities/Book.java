@@ -38,4 +38,7 @@ public class Book extends BaseEntity {
 
     @Column(nullable = false)
     private int completedReadings;
+
+    @Column(nullable = false)
+    private String bookCoverUrl;
 }

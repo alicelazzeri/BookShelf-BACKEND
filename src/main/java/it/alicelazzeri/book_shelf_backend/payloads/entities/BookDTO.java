@@ -18,6 +18,7 @@ public record BookDTO(
         @NotNull(message = "Book plot is mandatory")
         @NotEmpty(message = "Book plot cannot be empty")
         String bookPlot,
-        int completedReadings
+        int completedReadings,
+        String bookCoverUrl
 ) {
 }

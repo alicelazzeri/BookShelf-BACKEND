@@ -74,6 +74,7 @@ public class BookService {
                 .withDeletingDate(bookDTO.deletingDate())
                 .withBookPlot(bookDTO.bookPlot())
                 .withCompletedReadings(bookDTO.completedReadings())
+                .withBookCoverUrl(bookDTO.bookCoverUrl())
                 .build();
         return book;
     }
@@ -88,6 +89,7 @@ public class BookService {
         existingBook.setDeletingDate(bookDTO.deletingDate());
         existingBook.setBookPlot(bookDTO.bookPlot());
         existingBook.setCompletedReadings(bookDTO.completedReadings());
+        existingBook.setBookCoverUrl(bookDTO.bookCoverUrl());
     }
 
 }
