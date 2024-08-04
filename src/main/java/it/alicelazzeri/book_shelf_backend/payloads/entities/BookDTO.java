@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record BookRequestDTO(
+public record BookDTO(
         @NotNull(message = "Book title is mandatory")
         @NotEmpty(message = "Book title cannot be empty")
         String bookTitle,

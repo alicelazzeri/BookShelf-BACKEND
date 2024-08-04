@@ -2,7 +2,7 @@ package it.alicelazzeri.book_shelf_backend.services;
 
 import it.alicelazzeri.book_shelf_backend.entities.Book;
 import it.alicelazzeri.book_shelf_backend.exceptions.NotFoundException;
-import it.alicelazzeri.book_shelf_backend.payloads.entities.BookRequestDTO;
+import it.alicelazzeri.book_shelf_backend.payloads.entities.BookDTO;
 import it.alicelazzeri.book_shelf_backend.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,14 +34,14 @@ public class BookService {
     // POST saving book
 
     @Transactional
-    public Book saveBook(BookRequestDTO bookPayload) {
+    public Book saveBook(BookDTO bookPayload) {
         Book book = mapToEntity(bookPayload);
         return bookRepository.save(book);
     }
 
     // PUT updating book
     @Transactional
-    public Book updateBook(long id, BookRequestDTO updatedBook) {
+    public Book updateBook(long id, BookDTO updatedBook) {
         Book bookToBeUpdated = this.getBookById(id);
         if (bookToBeUpdated == null) {
             throw new NotFoundException("Ingredient with id: " + id + " not found.");
@@ -65,29 +65,29 @@ public class BookService {
     // Map BookDTO to Book entity (converts BookDTO to a Book entity instance in order to save or
     // update data on db via BookRepository)
 
-    public Book mapToEntity(BookRequestDTO bookRequestDTO) {
+    public Book mapToEntity(BookDTO bookDTO) {
         Book book = Book.builder()
-                .withBookTitle(bookRequestDTO.bookTitle())
-                .withBookAuthor(bookRequestDTO.bookAuthor())
-                .withIsbnCode(bookRequestDTO.isbnCode())
-                .withAddingDate(bookRequestDTO.addingDate())
-                .withDeletingDate(bookRequestDTO.deletingDate())
-                .withBookPlot(bookRequestDTO.bookPlot())
-                .withCompletedReadings(bookRequestDTO.completedReadings())
+                .withBookTitle(bookDTO.bookTitle())
+                .withBookAuthor(bookDTO.bookAuthor())
+                .withIsbnCode(bookDTO.isbnCode())
+                .withAddingDate(bookDTO.addingDate())
+                .withDeletingDate(bookDTO.deletingDate())
+                .withBookPlot(bookDTO.bookPlot())
+                .withCompletedReadings(bookDTO.completedReadings())
                 .build();
         return book;
     }
 
     // update already existing book from BookDTO
 
-    private void updateBookFromDTO(Book existingBook, BookRequestDTO bookRequestDTO) {
-        existingBook.setBookTitle(bookRequestDTO.bookTitle());
-        existingBook.setBookAuthor(bookRequestDTO.bookAuthor());
-        existingBook.setIsbnCode(bookRequestDTO.isbnCode());
-        existingBook.setAddingDate(bookRequestDTO.addingDate());
-        existingBook.setDeletingDate(bookRequestDTO.deletingDate());
-        existingBook.setBookPlot(bookRequestDTO.bookPlot());
-        existingBook.setCompletedReadings(bookRequestDTO.completedReadings());
+    private void updateBookFromDTO(Book existingBook, BookDTO bookDTO) {
+        existingBook.setBookTitle(bookDTO.bookTitle());
+        existingBook.setBookAuthor(bookDTO.bookAuthor());
+        existingBook.setIsbnCode(bookDTO.isbnCode());
+        existingBook.setAddingDate(bookDTO.addingDate());
+        existingBook.setDeletingDate(bookDTO.deletingDate());
+        existingBook.setBookPlot(bookDTO.bookPlot());
+        existingBook.setCompletedReadings(bookDTO.completedReadings());
     }
 
 }
