@@ -31,18 +31,15 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
-    @Column(name = "avatar_url")
-    private String avatarUrl;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String firstName, String lastName, String email, String password, String avatarUrl) {
+    public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.avatarUrl = avatarUrl;
     }
 
     @Override

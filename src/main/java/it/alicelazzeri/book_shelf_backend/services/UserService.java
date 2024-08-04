@@ -1,15 +1,24 @@
 package it.alicelazzeri.book_shelf_backend.services;
 
+import it.alicelazzeri.book_shelf_backend.entities.User;
+import it.alicelazzeri.book_shelf_backend.entities.enums.Role;
+import it.alicelazzeri.book_shelf_backend.exceptions.BadRequestException;
+import it.alicelazzeri.book_shelf_backend.exceptions.NotFoundException;
+import it.alicelazzeri.book_shelf_backend.payloads.auth.UserRegisterRequestDTO;
 import it.alicelazzeri.book_shelf_backend.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -67,6 +76,111 @@ public class UserService {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // GET all users
+
+    @Transactional(readOnly = true)
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    // GET user by id
+
+    @Transactional(readOnly = true)
+    public Optional<User> getUserById(long id) {
+        return userRepository.findById(id);
+    }
+
+    // POST saving user
+
+    @Transactional
+    public User saveUser(UserRegisterRequestDTO userPayload) {
+        Optional<User> existingUser = userRepository.findByEmail(userPayload.email());
+        if (existingUser.isPresent()) {
+            throw new BadRequestException("User with email: " + userPayload.email() + " already exists.");
+        }
+        User user = new User();
+        user.setFirstName(userPayload.firstName());
+        user.setLastName(userPayload.lastName());
+        user.setEmail(userPayload.email());
+        user.setRole(Role.USER);
+        user.setPassword(bcrypt.encode(userPayload.password()));
+        sendRegistrationEmail(userPayload.email(), userPayload.firstName());
+        userRepository.save(user);
+        return user;
+    }
+
+    // POST saving user with admin role
+
+    @Transactional
+    public User saveUserAdmin(UserRegisterRequestDTO userPayload){
+
+        Optional<User> existingUser = userRepository.findByEmail(userPayload.email());
+        if (existingUser.isPresent()) {
+            throw new BadRequestException("User with email: " + userPayload.email() + " already exists.");
+        }
+        User user = new User();
+        user.setFirstName(userPayload.firstName());
+        user.setLastName(userPayload.lastName());
+        user.setEmail(userPayload.email());
+        user.setRole(Role.USER);
+        user.setRole(Role.ADMIN);
+        user.setPassword(bcrypt.encode(userPayload.password()));
+        sendRegistrationEmail(userPayload.email(), userPayload.firstName());
+        userRepository.save(user);
+        return user;
+    }
+
+    // PUT updating existing user
+
+    @Transactional
+    public User updateUser(long id, UserRegisterRequestDTO userPayload) {
+        Optional<User> userOptional = getUserById(id);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setFirstName(userPayload.firstName());
+            user.setLastName(userPayload.lastName());
+            user.setEmail(userPayload.email());
+            user.setPassword(bcrypt.encode(userPayload.password()));
+
+            if (userPayload.role() != null) {
+                user.setRole(userPayload.role());
+            }
+            return userRepository.save(user);
+        } else {
+            throw new NotFoundException("User with id: " + id + " not found.");
+        }
+    }
+
+    // DELETE user by ID
+
+    @Transactional
+    public String deleteUser(long id) {
+        Optional<User> userOptional = getUserById(id);
+
+        if(userOptional.isPresent()){
+            userRepository.deleteById(id);
+            return "User with id: " + id + " deleted correctly.";
+        }
+        else{
+            throw new NotFoundException("User with id: " + id + " not found.");
+        }
+    }
+
+    // GET find user by email
+
+    @Transactional(readOnly = true)
+    public User findByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isPresent()){
+            return userOptional.get();
+        }
+        else {
+            throw new NotFoundException("User with email: " + email + " not found.");
         }
     }
 }
