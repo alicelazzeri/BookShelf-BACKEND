@@ -34,6 +34,8 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    // GET http://localhost:8080/api/books + bearer token
+
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Operation(summary = "Get all books", description = "Retrieve all books",
@@ -51,6 +53,8 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    // GET http://localhost:8080/api/books/{id} + bearer token
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Operation(summary = "Get book by ID", description = "Retrieve a book by ID",
@@ -64,6 +68,8 @@ public class BookController {
         Book book = bookService.getBookById(id);
         return ResponseEntity.ok(book);
     }
+
+    // POST http://localhost:8080/api/books + bearer token
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
@@ -89,6 +95,8 @@ public class BookController {
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
 
+    // PUT http://localhost:8080/api/books/{id} + bearer token
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Operation(summary = "Update a book", description = "Update an existing book",
@@ -109,6 +117,8 @@ public class BookController {
         Book bookToBeUpdated = bookService.updateBook(id, updatedBook);
         return ResponseEntity.ok(bookToBeUpdated);
     }
+
+    // DELETE http://localhost:8080/api/books/{id} + bearer token
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
