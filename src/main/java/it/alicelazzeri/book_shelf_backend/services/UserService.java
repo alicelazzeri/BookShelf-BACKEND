@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -82,8 +83,8 @@ public class UserService {
     // GET all users
 
     @Transactional(readOnly = true)
-    public Page<User> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     // GET user by id

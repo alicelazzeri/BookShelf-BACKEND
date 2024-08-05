@@ -8,25 +8,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.alicelazzeri.book_shelf_backend.entities.User;
 import it.alicelazzeri.book_shelf_backend.exceptions.BadRequestException;
-import it.alicelazzeri.book_shelf_backend.payloads.auth.UserLoginRequestDTO;
-import it.alicelazzeri.book_shelf_backend.payloads.auth.UserLoginResponseDTO;
 import it.alicelazzeri.book_shelf_backend.payloads.auth.UserRegisterRequestDTO;
-import it.alicelazzeri.book_shelf_backend.services.AuthService;
 import it.alicelazzeri.book_shelf_backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin
 @Tag(name = "Auth API", description = "Operations related to user authentication")
 public class AuthController {
-    @Autowired
-    private AuthService authService;
 
     @Autowired
     private UserService userService;
@@ -70,15 +69,12 @@ public class AuthController {
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
-    @PostMapping("/login")
-    @Operation(summary = "User login", description = "Authenticate user and generate token",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Login successful",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserLoginResponseDTO.class))),
-                    @ApiResponse(responseCode = "401", description = "Invalid credentials")
-            })
-    public ResponseEntity<UserLoginResponseDTO> login(@Parameter(description = "User login data") @RequestBody UserLoginRequestDTO loginPayload) {
-        UserLoginResponseDTO response = authService.authenticateUserAndGenerateToken(loginPayload);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @GetMapping("/users")
+    @Operation(summary = "Get all users", description = "Retrieve all users for selection")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }
