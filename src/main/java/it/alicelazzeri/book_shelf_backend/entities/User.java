@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,17 +24,25 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "first_name", nullable = false)
     @Size(min = 3, max = 30, message = "First name should be between 3 and 30 characters")
     private String firstName;
+
     @Column(name = "last_name", nullable = false)
     @Size(min = 3, max = 30, message = "Last name should be between 3 and 30 characters")
     private String lastName;
+
     @Column(nullable = false, unique = true)
     private String email;
+
     @Column(nullable = false)
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"user", "hibernateLazyInitializer", "handler"})
+    private List<Book> books = new ArrayList<>();
 
     public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;

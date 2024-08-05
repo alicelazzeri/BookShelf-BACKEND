@@ -1,6 +1,7 @@
 package it.alicelazzeri.book_shelf_backend.services;
 
 import it.alicelazzeri.book_shelf_backend.entities.Book;
+import it.alicelazzeri.book_shelf_backend.entities.User;
 import it.alicelazzeri.book_shelf_backend.exceptions.NotFoundException;
 import it.alicelazzeri.book_shelf_backend.payloads.entities.BookDTO;
 import it.alicelazzeri.book_shelf_backend.repositories.BookRepository;
@@ -16,14 +17,13 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    // GET all books
+    @Autowired
+    private UserService userService;
 
     @Transactional(readOnly = true)
     public Page<Book> getAllBooks(Pageable pageable) {
         return bookRepository.findAll(pageable);
     }
-
-    // GET book by id
 
     @Transactional(readOnly = true)
     public Book getBookById(long id) {
@@ -31,42 +31,35 @@ public class BookService {
                 () -> new NotFoundException("Book with id: " + id + " not found."));
     }
 
-    // POST saving book
-
     @Transactional
-    public Book saveBook(BookDTO bookPayload) {
+    public Book saveBook(BookDTO bookPayload, long userId) {
+        User user = userService.getUserById(userId).orElseThrow(
+                () -> new NotFoundException("User with id: " + userId + " not found."));
         Book book = mapToEntity(bookPayload);
+        book.setUser(user);
         return bookRepository.save(book);
     }
 
-    // PUT updating book
     @Transactional
     public Book updateBook(long id, BookDTO updatedBook) {
         Book bookToBeUpdated = this.getBookById(id);
-        if (bookToBeUpdated == null) {
-            throw new NotFoundException("Ingredient with id: " + id + " not found.");
-        } else {
-            updateBookFromDTO(bookToBeUpdated, updatedBook);
-            return bookRepository.save(bookToBeUpdated);
-        }
+        updateBookFromDTO(bookToBeUpdated, updatedBook);
+        return bookRepository.save(bookToBeUpdated);
     }
-
-    // DELETE book
 
     @Transactional
     public void deleteBook(long id) {
         if (!bookRepository.existsById(id)) {
             throw new NotFoundException("Book with id: " + id + " not found.");
-        } else {
-            bookRepository.deleteById(id);
         }
+        bookRepository.deleteById(id);
     }
 
     // Map BookDTO to Book entity (converts BookDTO to a Book entity instance in order to save or
     // update data on db via BookRepository)
 
-    public Book mapToEntity(BookDTO bookDTO) {
-        Book book = Book.builder()
+    private Book mapToEntity(BookDTO bookDTO) {
+        return Book.builder()
                 .withBookTitle(bookDTO.bookTitle())
                 .withBookAuthor(bookDTO.bookAuthor())
                 .withIsbnCode(bookDTO.isbnCode())
@@ -76,7 +69,6 @@ public class BookService {
                 .withCompletedReadings(bookDTO.completedReadings())
                 .withBookCoverUrl(bookDTO.bookCoverUrl())
                 .build();
-        return book;
     }
 
     // update already existing book from BookDTO
@@ -91,5 +83,4 @@ public class BookService {
         existingBook.setCompletedReadings(bookDTO.completedReadings());
         existingBook.setBookCoverUrl(bookDTO.bookCoverUrl());
     }
-
 }
