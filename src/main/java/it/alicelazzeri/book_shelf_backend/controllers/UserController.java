@@ -14,7 +14,6 @@ import it.alicelazzeri.book_shelf_backend.exceptions.NotFoundException;
 import it.alicelazzeri.book_shelf_backend.payloads.auth.UserRegisterRequestDTO;
 import it.alicelazzeri.book_shelf_backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
