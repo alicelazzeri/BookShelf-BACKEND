@@ -32,6 +32,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    // GET http://localhost:8080/api/users
+
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieve all users")
     @ApiResponses(value = {
@@ -48,6 +50,8 @@ public class UserController {
         }
     }
 
+    // GET http://localhost:8080/api/users/{id}
+
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID", description = "Retrieve a user by ID")
     @ApiResponses(value = {
@@ -61,6 +65,8 @@ public class UserController {
                 () -> new NotFoundException("User with id: " + id + " not found."));
         return ResponseEntity.ok(user);
     }
+
+    // // POST http://localhost:8080/api/users
 
     @PostMapping
     @Operation(summary = "Create a new user", description = "Create a new user")
@@ -80,6 +86,8 @@ public class UserController {
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         }
     }
+
+    // PUT http://localhost:8080/api/users/{id}
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a user", description = "Update an existing user")
@@ -101,6 +109,8 @@ public class UserController {
         User updatedUser = userService.updateUser(id, userDto);
         return ResponseEntity.ok(updatedUser);
     }
+
+    // DELETE http://localhost:8080/api/users/{id}
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a user", description = "Delete a user by ID")
