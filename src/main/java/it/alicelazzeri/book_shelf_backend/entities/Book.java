@@ -1,5 +1,7 @@
 package it.alicelazzeri.book_shelf_backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(setterPrefix = "with")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Book extends BaseEntity {
 
     @Column(nullable = false)
@@ -28,7 +31,7 @@ public class Book extends BaseEntity {
     @Column(nullable = false)
     private LocalDate addingDate;
 
-    @Column (nullable = false)
+    @Column
     private LocalDate deletingDate;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -42,5 +45,6 @@ public class Book extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 }

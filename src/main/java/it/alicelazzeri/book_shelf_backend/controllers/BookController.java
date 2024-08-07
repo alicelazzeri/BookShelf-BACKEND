@@ -20,6 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/books")
@@ -61,7 +64,7 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
-    // POST http://localhost:8080/api/books
+    // POST http://localhost:8080/api/books?userId={id}
 
     @PostMapping
     @Operation(summary = "Create a new book", description = "Create a new book")
@@ -71,13 +74,13 @@ public class BookController {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     public ResponseEntity<Book> saveBook(
-            @Parameter(description = "Book data to be created") @RequestBody @Validated BookDTO bookPayload,
-            @RequestParam long userId,
-            BindingResult validation) {
+            @Parameter(description = "Book data to be created")
+            @RequestBody @Validated BookDTO bookPayload,
+            BindingResult validation,
+            @RequestParam("userId") Long userId) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
         }
-
         Book savedBook = bookService.saveBook(bookPayload, userId);
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
@@ -99,8 +102,8 @@ public class BookController {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
         }
-        Book bookToBeUpdated = bookService.updateBook(id, updatedBook);
-        return ResponseEntity.ok(bookToBeUpdated);
+        Book updatedBookEntity = bookService.updateBook(id, updatedBook);
+        return ResponseEntity.ok(updatedBookEntity);
     }
 
     // DELETE http://localhost:8080/api/books/{id}
@@ -115,4 +118,22 @@ public class BookController {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
+
+    // PUT http://localhost:8080/api/books/{id}/cover
+
+    @PutMapping("/{id}/cover")
+    @Operation(summary = "Update a book cover", description = "Update the cover image of an existing book")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Book cover updated successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Book.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Book not found")
+    })
+    public ResponseEntity<Book> updateBookCover(
+            @Parameter(description = "ID of the book to be updated") @PathVariable long id,
+            @Parameter(description = "Book cover file to be uploaded") @RequestParam("bookCoverFile") MultipartFile bookCoverFile) throws IOException {
+        Book updatedBookEntity = bookService.updateBookCover(id, bookCoverFile);
+        return ResponseEntity.ok(updatedBookEntity);
+    }
+
 }

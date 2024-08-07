@@ -5,6 +5,7 @@ import it.alicelazzeri.book_shelf_backend.entities.enums.Role;
 import it.alicelazzeri.book_shelf_backend.exceptions.BadRequestException;
 import it.alicelazzeri.book_shelf_backend.exceptions.NotFoundException;
 import it.alicelazzeri.book_shelf_backend.payloads.auth.UserRegisterRequestDTO;
+import it.alicelazzeri.book_shelf_backend.payloads.auth.UserUpdateRequestDTO;
 import it.alicelazzeri.book_shelf_backend.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -135,19 +136,22 @@ public class UserService {
     // PUT updating existing user
 
     @Transactional
-    public User updateUser(long id, UserRegisterRequestDTO userPayload) {
+    public User updateUser(long id, UserUpdateRequestDTO userPayload) {
         Optional<User> userOptional = getUserById(id);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setFirstName(userPayload.firstName());
             user.setLastName(userPayload.lastName());
-            user.setEmail(userPayload.email());
-            user.setPassword(bcrypt.encode(userPayload.password()));
 
-            if (userPayload.role() != null) {
-                user.setRole(userPayload.role());
+            if (userPayload.email() != null && !userPayload.email().isEmpty()) {
+                user.setEmail(userPayload.email());
             }
+
+            if (userPayload.password() != null && !userPayload.password().isEmpty()) {
+                user.setPassword(bcrypt.encode(userPayload.password()));
+            }
+
             return userRepository.save(user);
         } else {
             throw new NotFoundException("User with id: " + id + " not found.");

@@ -12,6 +12,7 @@ import it.alicelazzeri.book_shelf_backend.exceptions.BadRequestException;
 import it.alicelazzeri.book_shelf_backend.exceptions.NoContentException;
 import it.alicelazzeri.book_shelf_backend.exceptions.NotFoundException;
 import it.alicelazzeri.book_shelf_backend.payloads.auth.UserRegisterRequestDTO;
+import it.alicelazzeri.book_shelf_backend.payloads.auth.UserUpdateRequestDTO;
 import it.alicelazzeri.book_shelf_backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -101,7 +102,7 @@ public class UserController {
             @Parameter(description = "ID of the user to be updated")
             @PathVariable long id,
             @Parameter(description = "Updated user data")
-            @RequestBody @Validated UserRegisterRequestDTO userDto,
+            @RequestBody @Validated UserUpdateRequestDTO userDto,
             BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
@@ -109,6 +110,7 @@ public class UserController {
         User updatedUser = userService.updateUser(id, userDto);
         return ResponseEntity.ok(updatedUser);
     }
+
 
     // DELETE http://localhost:8080/api/users/{id}
 
