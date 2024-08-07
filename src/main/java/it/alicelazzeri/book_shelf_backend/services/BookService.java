@@ -106,7 +106,7 @@ public class BookService {
         Font userFont = new Font(workSans, 13, Font.BOLD, userColor);
 
         // Add logo with text
-        Image logo = Image.getInstance("src/main/resources/static/images/unavailable.png");
+        Image logo = Image.getInstance("src/main/resources/static/images/logo.png");
         logo.scaleToFit(80, 80);
         logo.setAlignment(Element.ALIGN_CENTER);
         document.add(logo);
@@ -119,14 +119,19 @@ public class BookService {
         document.add(header);
 
         // User information
-        Paragraph userInfo = new Paragraph("Books list of " + user.getFirstName() + " " + user.getLastName(), userFont);
+        Paragraph userInfo = new Paragraph();
+        userInfo.add(new Chunk("Books list of ", workSansFont));
+        userInfo.add(new Chunk(user.getFirstName() + " " + user.getLastName(), userFont));
         userInfo.setAlignment(Element.ALIGN_CENTER);
         userInfo.setSpacingAfter(20);
         document.add(userInfo);
 
         // Books List
         for (Book book : user.getBooks()) {
-            Paragraph bookInfo = new Paragraph("• " + book.getBookTitle() + " by " + book.getBookAuthor(), bookTitleFont);
+            Paragraph bookInfo = new Paragraph();
+            bookInfo.add(new Chunk("• " + book.getBookTitle(), bookTitleFont));
+            bookInfo.add(new Chunk(" by " + book.getBookAuthor(), crimsonTextFont));
+            bookInfo.add(new Chunk("\n" + book.getBookPlot(), crimsonTextFont));
             bookInfo.setAlignment(Element.ALIGN_LEFT);
             bookInfo.setSpacingAfter(15);
             document.add(bookInfo);
@@ -140,6 +145,7 @@ public class BookService {
         User user = userService.getUserById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         return generateBooksPDF(user);
     }
+
 
     // Map BookDTO to Book entity (converts BookDTO to a Book entity instance in order to save or
     // update data on db via BookRepository)
