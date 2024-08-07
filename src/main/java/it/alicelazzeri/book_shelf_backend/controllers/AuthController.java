@@ -66,13 +66,4 @@ public class AuthController {
         User result = userService.saveUserAdmin(registerPayload);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
-
-    @GetMapping("/users")
-    @Operation(summary = "Get all users", description = "Retrieve all users for selection")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
-    }
 }
