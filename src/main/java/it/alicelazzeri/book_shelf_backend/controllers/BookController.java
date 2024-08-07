@@ -1,5 +1,6 @@
 package it.alicelazzeri.book_shelf_backend.controllers;
 
+import com.itextpdf.text.DocumentException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,13 +16,16 @@ import it.alicelazzeri.book_shelf_backend.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @RestController
@@ -136,4 +140,21 @@ public class BookController {
         return ResponseEntity.ok(updatedBookEntity);
     }
 
+    // GET http://localhost:8080/api/books/generate-pdf?userId={userId}
+
+    @GetMapping("/generate-pdf")
+    @Operation(summary = "Generate PDF", description = "Generate a PDF of the user's book list")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "PDF generated successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<byte[]> generateUserBooksPDF(@RequestParam("userId") Long userId) throws DocumentException, IOException {
+        ByteArrayOutputStream pdfOutput = bookService.generateUserBooksPDF(userId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "user_books.pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdfOutput.toByteArray());
+    }
 }

@@ -2,6 +2,9 @@ package it.alicelazzeri.book_shelf_backend.services;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
 import it.alicelazzeri.book_shelf_backend.entities.Book;
 import it.alicelazzeri.book_shelf_backend.entities.User;
 import it.alicelazzeri.book_shelf_backend.exceptions.BadRequestException;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
@@ -79,6 +83,63 @@ public class BookService {
         return bookRepository.save(bookToBeUpdated);
     }
 
+    @Transactional(readOnly = true)
+    public ByteArrayOutputStream generateBooksPDF(User user) throws DocumentException, IOException {
+        Document document = new Document();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PdfWriter.getInstance(document, output);
+        document.open();
+
+        // Color configuration
+        BaseColor black = new BaseColor(0, 0, 0);
+        BaseColor bookColor = new BaseColor(212, 98, 64);
+        BaseColor shelfColor = new BaseColor(21, 43, 60);
+        BaseColor userColor = new BaseColor(212, 98, 64);
+
+        // Font configuration
+        BaseFont crimsonText = BaseFont.createFont("src/main/resources/fonts/CrimsonText/CrimsonText-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font crimsonTextFont = new Font(crimsonText, 12, Font.NORMAL, black);
+        Font bookTitleFont = new Font(crimsonText, 12, Font.BOLDITALIC, black);
+
+        BaseFont workSans = BaseFont.createFont("src/main/resources/fonts/WorkSans/WorkSans-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font workSansFont = new Font(workSans, 13, Font.NORMAL, black);
+        Font userFont = new Font(workSans, 13, Font.BOLD, userColor);
+
+        // Add logo with text
+        Image logo = Image.getInstance("src/main/resources/static/images/unavailable.png");
+        logo.scaleToFit(80, 80);
+        logo.setAlignment(Element.ALIGN_CENTER);
+        document.add(logo);
+
+        Paragraph header = new Paragraph();
+        header.add(new Chunk("Book", new Font(workSans, 20, Font.BOLD, bookColor)));
+        header.add(new Chunk("Shelf", new Font(workSans, 20, Font.BOLD, shelfColor)));
+        header.setAlignment(Element.ALIGN_CENTER);
+        header.setSpacingAfter(20);
+        document.add(header);
+
+        // User information
+        Paragraph userInfo = new Paragraph("Books list of " + user.getFirstName() + " " + user.getLastName(), userFont);
+        userInfo.setAlignment(Element.ALIGN_CENTER);
+        userInfo.setSpacingAfter(20);
+        document.add(userInfo);
+
+        // Books List
+        for (Book book : user.getBooks()) {
+            Paragraph bookInfo = new Paragraph("• " + book.getBookTitle() + " by " + book.getBookAuthor(), bookTitleFont);
+            bookInfo.setAlignment(Element.ALIGN_LEFT);
+            bookInfo.setSpacingAfter(15);
+            document.add(bookInfo);
+        }
+
+        document.close();
+        return output;
+    }
+
+    public ByteArrayOutputStream generateUserBooksPDF(Long userId) throws DocumentException, IOException {
+        User user = userService.getUserById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        return generateBooksPDF(user);
+    }
 
     // Map BookDTO to Book entity (converts BookDTO to a Book entity instance in order to save or
     // update data on db via BookRepository)
