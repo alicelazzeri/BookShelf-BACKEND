@@ -36,6 +36,9 @@ public class User extends BaseEntity implements UserDetails {
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -44,11 +47,12 @@ public class User extends BaseEntity implements UserDetails {
     @JsonIgnoreProperties({"user", "hibernateLazyInitializer", "handler"})
     private List<Book> books = new ArrayList<>();
 
-    public User(String firstName, String lastName, String email, String password) {
+    public User(String firstName, String lastName, String email, String password, String avatarUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.avatarUrl = avatarUrl;
     }
 
     @Override

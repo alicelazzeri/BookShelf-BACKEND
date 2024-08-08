@@ -33,13 +33,15 @@ public class UsersRunner implements CommandLineRunner {
             String lastName = generateValidLastName();
             String email = faker.internet().emailAddress();
             String password = bcrypt.encode(faker.internet().password());
+            String avatarUrl = generateAvatarUrl(firstName, lastName);
 
             UserRegisterRequestDTO userDto = new UserRegisterRequestDTO(
                     firstName,
                     lastName,
                     email,
                     password,
-                    Role.USER
+                    Role.USER,
+                    avatarUrl
             );
 
             try {
@@ -70,6 +72,10 @@ public class UsersRunner implements CommandLineRunner {
                 lastName.length() < 3 || lastName.length() > 30
         );
         return lastName;
+    }
+
+    private String generateAvatarUrl(String firstName, String lastName) {
+        return "https://ui-avatars.com/api/?name=" + firstName + "+" + lastName + "&background=random";
     }
 
 }

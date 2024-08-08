@@ -25,6 +25,7 @@ public record UserRegisterRequestDTO(
         @NotEmpty(message = "User password cannot be empty")
         @Size(min = 8, message = "User password must contain at least 8 characters")
         String password,
-        Role role
+        Role role,
+        String avatarUrl
 ) {
 }
