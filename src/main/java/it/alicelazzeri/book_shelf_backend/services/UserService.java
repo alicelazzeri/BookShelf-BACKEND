@@ -79,6 +79,9 @@ public class UserService {
         }
     }
 
+    private String generateAvatarUrl(String firstName, String lastName) {
+        return "https://ui-avatars.com/api/?name=" + firstName + "+" + lastName + "&background=random";
+    }
 
     // GET all users
 
@@ -106,9 +109,10 @@ public class UserService {
         user.setFirstName(userPayload.firstName());
         user.setLastName(userPayload.lastName());
         user.setEmail(userPayload.email());
-        user.setRole(Role.USER);
+        user.setRole(userPayload.role() != null ? userPayload.role() : Role.USER);
         user.setPassword(bcrypt.encode(userPayload.password()));
-        user.setAvatarUrl(userPayload.avatarUrl());
+        user.setAvatarUrl(userPayload.avatarUrl() != null && !userPayload.avatarUrl().isEmpty() ?
+                userPayload.avatarUrl() : generateAvatarUrl(userPayload.firstName(), userPayload.lastName()));
         sendRegistrationEmail(userPayload.email(), userPayload.firstName());
         userRepository.save(user);
         return user;
@@ -127,10 +131,10 @@ public class UserService {
         user.setFirstName(userPayload.firstName());
         user.setLastName(userPayload.lastName());
         user.setEmail(userPayload.email());
-        user.setRole(Role.USER);
         user.setRole(Role.ADMIN);
         user.setPassword(bcrypt.encode(userPayload.password()));
-        user.setAvatarUrl(userPayload.avatarUrl());
+        user.setAvatarUrl(userPayload.avatarUrl() != null && !userPayload.avatarUrl().isEmpty() ?
+                userPayload.avatarUrl() : generateAvatarUrl(userPayload.firstName(), userPayload.lastName()));
         sendRegistrationEmail(userPayload.email(), userPayload.firstName());
         userRepository.save(user);
         return user;
