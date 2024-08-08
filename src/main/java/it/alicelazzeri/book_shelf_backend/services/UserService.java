@@ -108,6 +108,7 @@ public class UserService {
         user.setEmail(userPayload.email());
         user.setRole(Role.USER);
         user.setPassword(bcrypt.encode(userPayload.password()));
+        user.setAvatarUrl(userPayload.avatarUrl());
         sendRegistrationEmail(userPayload.email(), userPayload.firstName());
         userRepository.save(user);
         return user;
@@ -129,6 +130,7 @@ public class UserService {
         user.setRole(Role.USER);
         user.setRole(Role.ADMIN);
         user.setPassword(bcrypt.encode(userPayload.password()));
+        user.setAvatarUrl(userPayload.avatarUrl());
         sendRegistrationEmail(userPayload.email(), userPayload.firstName());
         userRepository.save(user);
         return user;

@@ -111,7 +111,6 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-
     // DELETE http://localhost:8080/api/users/{id}
 
     @DeleteMapping("/{id}")
