@@ -9,10 +9,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.alicelazzeri.book_shelf_backend.entities.Book;
+import it.alicelazzeri.book_shelf_backend.entities.User;
 import it.alicelazzeri.book_shelf_backend.exceptions.BadRequestException;
 import it.alicelazzeri.book_shelf_backend.exceptions.NoContentException;
+import it.alicelazzeri.book_shelf_backend.exceptions.NotFoundException;
 import it.alicelazzeri.book_shelf_backend.payloads.entities.BookDTO;
+import it.alicelazzeri.book_shelf_backend.repositories.BookRepository;
 import it.alicelazzeri.book_shelf_backend.services.BookService;
+import it.alicelazzeri.book_shelf_backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +40,13 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private UserService userService;
+
 
     // GET http://localhost:8080/api/books
 
@@ -67,6 +78,28 @@ public class BookController {
         Book book = bookService.getBookById(id);
         return ResponseEntity.ok(book);
     }
+
+    // GET http://localhost:8080/api/books/user/{userId}
+
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "Get books by User ID", description = "Retrieve books associated with a specific user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved user's books",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "404", description = "User or books not found")
+    })
+    public ResponseEntity<Page<Book>> getBooksByUserId(
+            @Parameter(description = "ID of the user whose books are to be retrieved") @PathVariable long userId,
+            Pageable pageable) {
+        User user = userService.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id: " + userId + " not found."));
+        Page<Book> books = bookRepository.findByUserId(userId, pageable);
+        if (books.isEmpty()) {
+            throw new NoContentException("No books found for user with id: " + userId);
+        }
+        return ResponseEntity.ok(books);
+    }
+
 
     // POST http://localhost:8080/api/books?userId={id}
 

@@ -43,7 +43,7 @@ public class BooksRunner implements CommandLineRunner {
                         generateRandomFutureDate(random),
                         "Harry Potter's first year at Hogwarts, where he learns he's a famous wizard and faces the Dark Lord.",
                         generateRandomReadings(random),
-                        "https://res.cloudinary.com/dopblayrc/image/upload/v1722924417/book%20covers/vdrlw9raq4afrozoxrfw.jpg"
+                        "https://res.cloudinary.com/dopblayrc/image/upload/v1722926794/book%20covers/harry%20potter/psgtrx0kn1zb7e6s3dgo.jpg"
                 )
         );
         books.add(
@@ -54,7 +54,7 @@ public class BooksRunner implements CommandLineRunner {
                         generateRandomFutureDate(random),
                         "Harry returns to Hogwarts and discovers the dark secrets of the Chamber of Secrets.",
                         generateRandomReadings(random),
-                        "https://res.cloudinary.com/dopblayrc/image/upload/v1722924416/book%20covers/dkmypxvrp0me7eifj9rp.jpg"
+                        "https://res.cloudinary.com/dopblayrc/image/upload/v1722926794/book%20covers/harry%20potter/nvipu72tcs3z8skjibk9.jpg"
                 )
         );
         books.add(
@@ -65,7 +65,7 @@ public class BooksRunner implements CommandLineRunner {
                         generateRandomFutureDate(random),
                         "Harry learns about Sirius Black, a dangerous prisoner who has escaped from Azkaban.",
                         generateRandomReadings(random),
-                        "https://res.cloudinary.com/dopblayrc/image/upload/v1722924416/book%20covers/k7jnb1rv4gdzpapn4yqe.jpg"
+                        "https://res.cloudinary.com/dopblayrc/image/upload/v1722926794/book%20covers/harry%20potter/lhgvx2clrkktd3lsddss.jpg"
                 )
         );
         books.add(
