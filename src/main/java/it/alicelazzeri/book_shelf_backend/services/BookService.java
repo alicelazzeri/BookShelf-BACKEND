@@ -64,9 +64,9 @@ public class BookService {
 
     @Transactional
     public void deleteBook(long id) {
-        if (!bookRepository.existsById(id)) {
-            throw new NotFoundException("Book with id: " + id + " not found.");
-        }
+        Book book = this.getBookById(id);
+        book.setDeletingDate(LocalDate.now());
+        bookRepository.save(book);
         bookRepository.deleteById(id);
     }
 
@@ -81,6 +81,13 @@ public class BookService {
             throw new BadRequestException("Book cover file is empty or null.");
         }
         return bookRepository.save(bookToBeUpdated);
+    }
+
+    @Transactional
+    public Book incrementCompletedReadings(long id) {
+        Book book = this.getBookById(id);
+        book.setCompletedReadings(book.getCompletedReadings() + 1);
+        return bookRepository.save(book);
     }
 
     @Transactional(readOnly = true)

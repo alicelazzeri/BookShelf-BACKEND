@@ -100,7 +100,6 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
-
     // POST http://localhost:8080/api/books?userId={id}
 
     @PostMapping
@@ -189,5 +188,19 @@ public class BookController {
         headers.setContentDispositionFormData("attachment", "user_books.pdf");
 
         return ResponseEntity.ok().headers(headers).body(pdfOutput.toByteArray());
+    }
+
+    // PUT http://localhost:8080/api/books/{id}/increment-readings
+
+    @PutMapping("/{id}/increment-readings")
+    @Operation(summary = "Increment completed readings", description = "Increment the number of completed readings for a book")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully incremented completed readings",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Book.class))),
+            @ApiResponse(responseCode = "404", description = "Book not found")
+    })
+    public ResponseEntity<Book> incrementCompletedReadings(@PathVariable long id) {
+        Book updatedBook = bookService.incrementCompletedReadings(id);
+        return ResponseEntity.ok(updatedBook);
     }
 }
